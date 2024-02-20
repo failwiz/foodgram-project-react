@@ -6,7 +6,12 @@ from recipes.models import (
         Tag,
         Recipe,
         Unit,
+        UnitKind,
 )
+
+
+class IngredientAmountInline(admin.TabularInline):
+    model = Recipe.ingredients.through
 
 
 @admin.register(Recipe)
@@ -16,10 +21,11 @@ class RecipeAdmin(admin.ModelAdmin):
         'name',
         'author',
         'description',
-        'ingredients',
-        'tags',
         'time_to_cook',
     )
+    inlines = (IngredientAmountInline,)
+    exclude = ('ingredients',)
+    filter_horizontal = ('tags',)
 
 
 @admin.register(Ingredient)
@@ -50,13 +56,21 @@ class IngredientAmountAdmin(admin.ModelAdmin):
         'amount',
     )
 
-
 @admin.register(Unit)
 class UnitAdmin(admin.ModelAdmin):
 
     list_display = (
         'name',
         'short_name',
+        'unit_kind',
         'base_unit',
-        'cooef',
+        'coeff',
+    )
+
+
+@admin.register(UnitKind)
+class UnitKindAdmin(admin.ModelAdmin):
+
+    list_display = (
+        'name',
     )

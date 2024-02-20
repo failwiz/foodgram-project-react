@@ -49,7 +49,7 @@ class Tag(models.Model):
     name = models.CharField(
         verbose_name='Название',
         max_length=20,
-    ),
+    )
     color = models.CharField(
         verbose_name='Цветовой код',
         default='FFFFFF',
@@ -58,6 +58,8 @@ class Tag(models.Model):
     slug = models.SlugField(
         verbose_name='Идентификатор',
         null=False,
+        primary_key=True,
+        
     )
 
     def __str__(self) -> str:
@@ -70,6 +72,19 @@ class Ingredient(models.Model):
     name = models.CharField(
         verbose_name='Название',
         max_length=50,
+        null=False,
+    )
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class UnitKind(models.Model):
+    """Модель вида единицы измерения."""
+
+    name = models.CharField(
+        verbose_name='Название',
+        max_length=20,
         null=False,
     )
 
@@ -95,10 +110,17 @@ class Unit(models.Model):
         verbose_name='Базовая единица',
         on_delete=models.CASCADE,
         null=True,
+        blank=True,
     )
     coeff = models.FloatField(
         default=1,
         verbose_name='Коэффициент'
+    )
+    unit_kind = models.ForeignKey(
+        UnitKind,
+        verbose_name='Вид единицы измерения',
+        null=False,
+        on_delete=models.CASCADE,
     )
 
     def __str__(self) -> str:
@@ -111,6 +133,7 @@ class IngredientAmount(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         verbose_name='Рецепт',
+        related_name='ingredient_amounts',
         on_delete=models.CASCADE,
         null=False,
     )
