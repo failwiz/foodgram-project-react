@@ -56,6 +56,7 @@ class IngredientAmountAdmin(admin.ModelAdmin):
         'amount',
     )
 
+
 @admin.register(Unit)
 class UnitAdmin(admin.ModelAdmin):
 

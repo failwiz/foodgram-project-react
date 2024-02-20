@@ -42,6 +42,10 @@ class Recipe(models.Model):
     def __str__(self) -> str:
         return self.name
 
+    class Meta:
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
+
 
 class Tag(models.Model):
     """Модель тега рецепта."""
@@ -59,11 +63,15 @@ class Tag(models.Model):
         verbose_name='Идентификатор',
         null=False,
         primary_key=True,
-        
+
     )
 
     def __str__(self) -> str:
         return self.name
+
+    class Meta:
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
 
 
 class Ingredient(models.Model):
@@ -78,6 +86,10 @@ class Ingredient(models.Model):
     def __str__(self) -> str:
         return self.name
 
+    class Meta:
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
+
 
 class UnitKind(models.Model):
     """Модель вида единицы измерения."""
@@ -90,6 +102,10 @@ class UnitKind(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+    class Meta:
+        verbose_name = 'Вид единицы измерения'
+        verbose_name_plural = 'Виды единиц измерений'
 
 
 class Unit(models.Model):
@@ -126,6 +142,10 @@ class Unit(models.Model):
     def __str__(self) -> str:
         return self.short_name
 
+    class Meta:
+        verbose_name = 'Единица измерения'
+        verbose_name_plural = 'Единицы измерений'
+
 
 class IngredientAmount(models.Model):
     """Модель связи между рецептом и ингредиентом"""
@@ -156,6 +176,10 @@ class IngredientAmount(models.Model):
 
     def __str__(self) -> str:
         return f'{self.ingredient}, {self.amount} {self.unit}'
+
+    class Meta:
+        verbose_name = 'Количество ингредиентов'
+        verbose_name_plural = 'Количества ингредиентов'
 
     def amount_in_base_unit(self) -> int:
         """Метод для выражения количества ингредиента в базовой единице."""
