@@ -8,15 +8,18 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     """Сериализатор модели пользователя."""
 
-    class Meta:
-        model = User
-        fields = '__all__'
+    is_subscribed = serializers.SerializerMethodField()
 
-
-class UserSubsSerializer(serializers.ModelSerializer):
-    """Сериализатор модели пользователя."""
-    subscriptions = UserSerializer(many=True, read_only=True)
+    def get_is_subscribed(self, obj):
+        return obj in self.context.get('request').user.subscriptions.all()
 
     class Meta:
         model = User
-        fields = ('subscriptions', )
+        fields = (
+            'id',
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+        )

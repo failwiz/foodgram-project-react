@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.viewsets import ModelViewSet
 
 from users.serializers import (
-    UserSubsSerializer
+    UserSerializer
 )
 
 
@@ -12,7 +12,7 @@ User = get_user_model()
 
 class UserSubViewset(ModelViewSet):
 
-    serializer_class = UserSubsSerializer
+    serializer_class = UserSerializer
 
     def get_queryset(self):
         return self.request.user.subscriptions

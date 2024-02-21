@@ -10,4 +10,4 @@ class UserAdmin(admin.ModelAdmin):
 
     model = User
 
-    filter_horizontal = ('favorite_recipes', 'shopping_list')
+    filter_horizontal = ('favorite_recipes', 'shopping_list', 'subscriptions')
