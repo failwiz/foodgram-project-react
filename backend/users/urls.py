@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework.routers import Route, SimpleRouter
 
-from users.views import SubscriptionViewSet
+from users.views import UserSubViewset
 
 
 class SubscriptionRouter(SimpleRouter):
@@ -13,7 +13,7 @@ class SubscriptionRouter(SimpleRouter):
             mapping={'get': 'list'},
             name='subscriptions-list',
             detail=False,
-            initkwargs={'suffix': 'List'}
+            initkwargs={}
         ),
         Route(
             url=r'^{prefix}/(?P<user_id>\d+)/subscribe/$',
@@ -27,11 +27,11 @@ class SubscriptionRouter(SimpleRouter):
 
 router = SubscriptionRouter()
 
-router.register('users', SubscriptionViewSet, basename='subs')
+router.register('users', UserSubViewset, basename='subs')
 
 
 urlpatterns = [
+    path('', include(router.urls)),
     path('', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
-    path('', include(router.urls)),
 ]

@@ -1,38 +1,22 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
-
-from users.validators import UserNotSubbedToSelfValidator
-from users.models import Subscription
 
 
 User = get_user_model()
 
 
-class SubscriptionSerializer(serializers.ModelSerializer):
-    """Сериализатор модели подписки."""
-
-    user = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field='username',
-        default=serializers.CurrentUserDefault()
-    )
-    subscription = serializers.SlugRelatedField(
-        slug_field='username',
-        queryset=User.objects.all(),
-    )
+class UserSerializer(serializers.ModelSerializer):
+    """Сериализатор модели пользователя."""
 
     class Meta:
-        model = Subscription
-        fields = ('user', 'subscription')
+        model = User
+        fields = '__all__'
 
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Subscription.objects.all(),
-                fields=('user', 'subscription')
-            ),
-            UserNotSubbedToSelfValidator(
-                user_field='user',
-                subscription_field='subscription'
-            )
-        ]
+
+class UserSubsSerializer(serializers.ModelSerializer):
+    """Сериализатор модели пользователя."""
+    subscriptions = UserSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = User
+        fields = ('subscriptions', )
