@@ -9,3 +9,5 @@ User = get_user_model()
 class UserAdmin(admin.ModelAdmin):
 
     model = User
+
+    filter_horizontal = ('favorite_recipes', 'shopping_list')
