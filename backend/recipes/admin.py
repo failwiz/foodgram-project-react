@@ -5,8 +5,6 @@ from recipes.models import (
         IngredientAmount,
         Tag,
         Recipe,
-        Unit,
-        UnitKind,
 )
 
 
@@ -52,26 +50,5 @@ class IngredientAmountAdmin(admin.ModelAdmin):
     list_display = (
         'recipe',
         'ingredient',
-        'unit',
         'amount',
-    )
-
-
-@admin.register(Unit)
-class UnitAdmin(admin.ModelAdmin):
-
-    list_display = (
-        'name',
-        'short_name',
-        'unit_kind',
-        'base_unit',
-        'coeff',
-    )
-
-
-@admin.register(UnitKind)
-class UnitKindAdmin(admin.ModelAdmin):
-
-    list_display = (
-        'name',
     )

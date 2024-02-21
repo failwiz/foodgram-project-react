@@ -82,69 +82,18 @@ class Ingredient(models.Model):
         max_length=50,
         null=False,
     )
+    measurement_unit = models.CharField(
+        verbose_name='Единица измерения',
+        max_length=10,
+        null=False
+    )
 
     def __str__(self) -> str:
-        return self.name
+        return f'{self.name}, {self.measurement_unit}'
 
     class Meta:
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
-
-
-class UnitKind(models.Model):
-    """Модель вида единицы измерения."""
-
-    name = models.CharField(
-        verbose_name='Название',
-        max_length=20,
-        null=False,
-    )
-
-    def __str__(self) -> str:
-        return self.name
-
-    class Meta:
-        verbose_name = 'Вид единицы измерения'
-        verbose_name_plural = 'Виды единиц измерений'
-
-
-class Unit(models.Model):
-    """Модель единицы измерения для игредиента."""
-
-    name = models.CharField(
-        verbose_name='Название',
-        max_length=20,
-        null=False,
-    )
-    short_name = models.CharField(
-        verbose_name='Сокращение',
-        max_length=10,
-        null=False,
-    )
-    base_unit = models.ForeignKey(
-        'self',
-        verbose_name='Базовая единица',
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-    )
-    coeff = models.FloatField(
-        default=1,
-        verbose_name='Коэффициент'
-    )
-    unit_kind = models.ForeignKey(
-        UnitKind,
-        verbose_name='Вид единицы измерения',
-        null=False,
-        on_delete=models.CASCADE,
-    )
-
-    def __str__(self) -> str:
-        return self.short_name
-
-    class Meta:
-        verbose_name = 'Единица измерения'
-        verbose_name_plural = 'Единицы измерений'
 
 
 class IngredientAmount(models.Model):
@@ -163,24 +112,15 @@ class IngredientAmount(models.Model):
         on_delete=models.CASCADE,
         null=False,
     )
-    unit = models.ForeignKey(
-        Unit,
-        verbose_name='Единица измерения',
-        on_delete=models.CASCADE,
-        null=False,
-    )
     amount = models.IntegerField(
         verbose_name='Количество',
         null=False,
     )
 
     def __str__(self) -> str:
-        return f'{self.ingredient}, {self.amount} {self.unit}'
+        return (f'{self.ingredient.name}, {self.amount} '
+                f'{self.ingredient.measurement_unit}')
 
     class Meta:
-        verbose_name = 'Количество ингредиентов'
+        verbose_name = 'Количество ингредиента'
         verbose_name_plural = 'Количества ингредиентов'
-
-    def amount_in_base_unit(self) -> int:
-        """Метод для выражения количества ингредиента в базовой единице."""
-        return self.amount * self.unit.coeff
