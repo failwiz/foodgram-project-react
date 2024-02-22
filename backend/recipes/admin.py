@@ -18,7 +18,7 @@ class RecipeAdmin(admin.ModelAdmin):
     list_display = (
         'name',
         'author',
-        'description',
+        'text',
         'cooking_time',
     )
     inlines = (IngredientAmountInline,)

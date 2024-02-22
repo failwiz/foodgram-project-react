@@ -20,7 +20,7 @@ class Recipe(models.Model):
         related_name='recipes',
         null=False,
     )
-    description = models.TextField(
+    text = models.TextField(
         verbose_name='Описание',
         blank=True,
     )
@@ -62,8 +62,6 @@ class Tag(models.Model):
     slug = models.SlugField(
         verbose_name='Идентификатор',
         null=False,
-        primary_key=True,
-
     )
 
     def __str__(self) -> str:

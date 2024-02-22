@@ -4,8 +4,10 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, mixins
 
+from recipes.models import Recipe
 from users.serializers import (
-    UserSerializer
+    FavoriteSerializer,
+    SubscriptionSerializer
 )
 
 
@@ -19,7 +21,7 @@ class UserSubViewset(
     GenericViewSet
 ):
 
-    serializer_class = UserSerializer
+    serializer_class = SubscriptionSerializer
 
     def get_queryset(self):
         return self.request.user.subscriptions
@@ -39,6 +41,37 @@ class UserSubViewset(
 
     def destroy(self, request, *args, **kwargs):
         self.request.user.subscriptions.remove(self.get_user())
+        return Response(
+            status=status.HTTP_204_NO_CONTENT,
+        )
+
+
+class UserFavViewset(
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+    GenericViewSet
+):
+
+    serializer_class = FavoriteSerializer
+
+    def get_queryset(self):
+        return self.request.user.favorite_recipes
+
+    def get_recipe(self):
+        return get_object_or_404(Recipe, pk=self.kwargs.get('recipe_id'))
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(self.get_recipe())
+        headers = self.get_success_headers(serializer.data)
+        self.request.user.favorite_recipes.add(self.get_recipe())
+        return Response(
+            serializer.data,
+            status=status.HTTP_201_CREATED,
+            headers=headers,
+        )
+
+    def destroy(self, request, *args, **kwargs):
+        self.request.user.favorite_recipes.remove(self.get_recipe())
         return Response(
             status=status.HTTP_204_NO_CONTENT,
         )
