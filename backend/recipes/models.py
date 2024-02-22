@@ -35,7 +35,7 @@ class Recipe(models.Model):
         verbose_name='Теги',
         related_name='recipes',
     )
-    time_to_cook = models.IntegerField(
+    cooking_time = models.IntegerField(
         verbose_name='Время приготовления',
     )
 

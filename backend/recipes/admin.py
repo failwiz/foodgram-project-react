@@ -19,7 +19,7 @@ class RecipeAdmin(admin.ModelAdmin):
         'name',
         'author',
         'description',
-        'time_to_cook',
+        'cooking_time',
     )
     inlines = (IngredientAmountInline,)
     exclude = ('ingredients',)
