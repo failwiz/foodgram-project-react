@@ -14,10 +14,14 @@ class IngredientSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     """Сериализатор для модели рецепта."""
 
-    def get_field_names(self, declared_fields, info):
-        if self.parent and self.parent.parent:
-            self.Meta.fields = self.Meta.short_fields
-        return super().get_field_names(declared_fields, info)
+    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
+
+    def get_is_favorited(self, obj):
+        return obj in self.context.get('request').user.favorite_recipes.all()
+
+    def get_is_in_shopping_cart(self, obj):
+        return obj in self.context.get('request').user.shopping_list.all()
 
     class Meta:
         model = Recipe
@@ -26,11 +30,20 @@ class RecipeSerializer(serializers.ModelSerializer):
             'tags',
             'author',
             'ingredients',
+            'is_favorited',
+            'is_in_shopping_cart',
             'name',
             'text',
             'cooking_time',
         )
-        short_fields = ('id', 'name', 'cooking_time')
+
+
+class RecipeNestedSerializer(serializers.ModelSerializer):
+    """Сериализатор модели рецепта для вкладывания в другие сериализаторы"""
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'cooking_time')
 
 
 class TagSerializer(serializers.ModelSerializer):

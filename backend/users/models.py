@@ -11,7 +11,7 @@ class CustomUser(AbstractUser):
         verbose_name='Избранное',
     )
     shopping_list = models.ManyToManyField(
-        'recipes.IngredientAmount',
+        'recipes.Recipe',
         related_name='shoppers',
         verbose_name='Список покупок',
         blank=True,
