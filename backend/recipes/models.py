@@ -13,6 +13,11 @@ class Recipe(models.Model):
         max_length=50,
         null=False,
     )
+    image = models.ImageField(
+        upload_to='recipes/images/',
+        null=True,
+        default=None,
+    )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
