@@ -3,6 +3,7 @@ import base64
 from django.core.files.base import ContentFile
 from rest_framework import serializers
 
+from users.serializers import CustomUserSerializer
 from recipes.models import Ingredient, IngredientAmount, Recipe, Tag
 
 
@@ -19,12 +20,21 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
 
     id = serializers.PrimaryKeyRelatedField(
         queryset=Ingredient.objects.all(),
+        source='ingredient',
     )
+    name = serializers.SerializerMethodField()
+    measurement_unit = serializers.SerializerMethodField()
     amount = serializers.IntegerField()
 
     class Meta:
         model = IngredientAmount
-        fields = ('id', 'amount')
+        fields = ('id', 'amount', 'name', 'measurement_unit')
+
+    def get_name(self, obj):
+        return obj.ingredient.name
+
+    def get_measurement_unit(self, obj):
+        return obj.ingredient.measurement_unit
 
 
 class Base64ImageField(serializers.ImageField):
@@ -43,10 +53,14 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
-    image = Base64ImageField(required=False, allow_null=True)
+    image = Base64ImageField(required=True, allow_null=True)
     ingredients = IngredientAmountSerializer(
         many=True,
         source='ingredient_amounts'
+    )
+    author = CustomUserSerializer(
+        read_only=True,
+        default=serializers.CurrentUserDefault()
     )
 
     class Meta:
@@ -77,28 +91,19 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         tags = validated_data.pop('tags')
-        ingredients = validated_data.pop('ingredients')
+        ingredients = validated_data.pop('ingredient_amounts')
         recipe = Recipe.objects.create(**validated_data)
 
         for tag in tags:
             recipe.tags.add(tag)
         for element in ingredients:
-            print(element)
-            ingredient = element['id']
+            ingredient = element['ingredient']
             amount = element['amount']
             recipe.ingredients.add(
                 ingredient,
                 through_defaults={'amount': amount}
             )
         return recipe
-
-
-class RecipeNestedSerializer(serializers.ModelSerializer):
-    """Сериализатор модели рецепта для вкладывания в другие сериализаторы"""
-
-    class Meta:
-        model = Recipe
-        fields = ('id', 'name', 'cooking_time')
 
 
 class TagSerializer(serializers.ModelSerializer):

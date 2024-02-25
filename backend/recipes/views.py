@@ -1,13 +1,16 @@
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 from rest_framework.viewsets import (
     mixins,
     ModelViewSet,
     GenericViewSet,
 )
 
+from recipes.filters import RecipeFilter
 from recipes.models import Ingredient, Recipe, Tag
+from recipes.nested import RecipeNestedSerializer
 from recipes.serializers import (
     IngredientSerializer,
-    RecipeNestedSerializer,
     RecipeSerializer,
     TagSerializer
 )
@@ -23,6 +26,10 @@ class IngredientViewSet(
 
     serializer_class = IngredientSerializer
     queryset = Ingredient.objects.all()
+    filter_backends = (filters.SearchFilter,)
+    pagination_class = None
+    lookup_field = 'name'
+    search_fields = ('name',)
 
 
 class RecipeViewSet(ModelViewSet):
@@ -30,6 +37,14 @@ class RecipeViewSet(ModelViewSet):
 
     serializer_class = RecipeSerializer
     queryset = Recipe.objects.all()
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = RecipeFilter
+    filterset_fields = [
+        'tags',
+    ]
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
 
 
 class TagViewset(
@@ -41,6 +56,7 @@ class TagViewset(
 
     serializer_class = TagSerializer
     queryset = Tag.objects.all()
+    pagination_class = None
 
 
 class FavoriteViewset(
@@ -53,7 +69,7 @@ class FavoriteViewset(
     attr_name = 'favorite_recipes'
 
     def get_queryset(self):
-        return self.request.user.favorite_recipes
+        return self.request.user.favorite_recipes.all()
 
 
 class ShoppingListViewset(
@@ -66,4 +82,4 @@ class ShoppingListViewset(
     attr_name = 'shopping_list'
 
     def get_queryset(self):
-        return self.request.user.shopping_list
+        return self.request.user.shopping_list.all()

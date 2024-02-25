@@ -6,7 +6,7 @@ from djoser.serializers import (
 )
 from rest_framework import serializers
 
-from recipes.serializers import RecipeNestedSerializer
+from recipes.nested import RecipeNestedSerializer
 from users.mixins import IsSubscribedMixin
 
 

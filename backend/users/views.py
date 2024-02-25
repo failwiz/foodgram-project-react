@@ -20,4 +20,4 @@ class UserSubViewset(
     attr_name = 'subscriptions'
 
     def get_queryset(self):
-        return self.request.user.subscriptions
+        return self.request.user.subscriptions.all()
