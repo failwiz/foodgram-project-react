@@ -39,3 +39,10 @@ class GenericSubscriptionMixin(
         return Response(
             status=status.HTTP_204_NO_CONTENT,
         )
+
+
+class IsSubscribedMixin:
+    """Миксин для поля подписки в сериализаторе."""
+
+    def get_is_subscribed(self, obj):
+        return obj in self.context.get('request').user.subscriptions.all()
