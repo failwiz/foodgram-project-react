@@ -112,6 +112,7 @@ class IngredientAmount(models.Model):
     ingredient = models.ForeignKey(
         Ingredient,
         verbose_name='Ингредиент',
+        related_name='ingredient_amount',
         on_delete=models.CASCADE,
         null=False,
     )
