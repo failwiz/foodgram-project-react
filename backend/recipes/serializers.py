@@ -1,7 +1,11 @@
 from rest_framework import serializers
 
 from users.serializers import CustomUserSerializer
-from recipes.mixins import GetImageMixin
+from recipes.mixins import (
+    GetImageMixin,
+    IsFavoritedMixin,
+    isInShoppingCartMixin
+)
 from recipes.models import Ingredient, IngredientAmount, Recipe, Tag
 
 
@@ -43,11 +47,14 @@ class TagSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'color', 'slug')
 
 
-class RecipeSerializer(serializers.ModelSerializer, GetImageMixin):
+class RecipeSerializer(
+    serializers.ModelSerializer,
+    GetImageMixin,
+    IsFavoritedMixin,
+    isInShoppingCartMixin
+):
     """Сериализатор для модели рецепта."""
 
-    is_favorited = serializers.SerializerMethodField()
-    is_in_shopping_cart = serializers.SerializerMethodField()
     ingredients = IngredientAmountSerializer(
         many=True,
         source='ingredient_amounts'
@@ -57,6 +64,8 @@ class RecipeSerializer(serializers.ModelSerializer, GetImageMixin):
         default=serializers.CurrentUserDefault()
     )
     tags = TagSerializer(many=True)
+    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
@@ -72,12 +81,6 @@ class RecipeSerializer(serializers.ModelSerializer, GetImageMixin):
             'text',
             'cooking_time',
         )
-
-    def get_is_favorited(self, obj):
-        return obj in self.context.get('request').user.favorite_recipes.all()
-
-    def get_is_in_shopping_cart(self, obj):
-        return obj in self.context.get('request').user.shopping_list.all()
 
     def create(self, validated_data):
         tags = validated_data.pop('tags')

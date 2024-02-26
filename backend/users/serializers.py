@@ -54,7 +54,6 @@ class CustomUserSerializer(UserSerializer, IsSubscribedMixin):
 class SubscriptionSerializer(serializers.ModelSerializer, IsSubscribedMixin):
     """Сериализатор модели пользователя для подписок."""
 
-    is_subscribed = serializers.SerializerMethodField()
     recipes = RecipeNestedSerializer(many=True, read_only=True)
 
     class Meta:

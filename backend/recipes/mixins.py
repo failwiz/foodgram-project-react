@@ -24,3 +24,17 @@ class GetImageMixin:
         if obj.image:
             return obj.image.url
         return None
+
+
+class IsFavoritedMixin:
+    """Миксин для метода определения избранного."""
+
+    def get_is_favorited(self, obj):
+        return obj in self.context.get('request').user.favorite_recipes.all()
+
+
+class isInShoppingCartMixin:
+    """Миксин для метода определения назождения в списке покупок."""
+
+    def get_is_in_shopping_cart(self, obj):
+        return obj in self.context.get('request').user.shopping_list.all()
