@@ -1,7 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.serializers import SerializerMethodField
 from rest_framework.viewsets import GenericViewSet, mixins
 
 
@@ -44,8 +43,6 @@ class GenericSubscriptionMixin(
 
 class IsSubscribedMixin:
     """Миксин для поля подписки в сериализаторе."""
-
-    is_subscribed = SerializerMethodField()
 
     def get_is_subscribed(self, obj):
         return obj in self.context.get('request').user.subscriptions.all()

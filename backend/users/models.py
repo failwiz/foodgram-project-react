@@ -8,6 +8,7 @@ class CustomUser(AbstractUser):
     favorite_recipes = models.ManyToManyField(
         'recipes.Recipe',
         blank=True,
+        related_name='favoriters',
         verbose_name='Избранное',
     )
     shopping_list = models.ManyToManyField(
@@ -23,3 +24,7 @@ class CustomUser(AbstractUser):
         verbose_name='Подписки',
         blank=True,
     )
+
+    @property
+    def recipes_count(self):
+        return self.recipes.count()

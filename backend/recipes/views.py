@@ -40,7 +40,7 @@ class RecipeViewSet(ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     filterset_fields = [
-        'tags', 'author'
+        'tags', 'author', 'is_favorited', 'is_in_shopping_list'
     ]
 
     def perform_create(self, serializer):
