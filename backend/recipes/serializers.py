@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from users.serializers import CustomUserSerializer
 from recipes.mixins import (
+    Base64ImageField,
     GetImageMixin,
     IsFavoritedMixin,
     isInShoppingCartMixin
@@ -63,9 +64,10 @@ class RecipeSerializer(
         read_only=True,
         default=serializers.CurrentUserDefault()
     )
-    tags = TagSerializer(many=True)
+    tags = serializers.SerializerMethodField()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
+    image = Base64ImageField(required=True, allow_null=True)
 
     class Meta:
         model = Recipe
@@ -97,3 +99,7 @@ class RecipeSerializer(
                 through_defaults={'amount': amount}
             )
         return recipe
+
+    # def update(self, instance, validated_data):
+    #     ingredients = validated_data.pop('ingredient_amounts')
+    #     tags = validated_data.pop('tags')

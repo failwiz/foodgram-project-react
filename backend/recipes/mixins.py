@@ -18,8 +18,6 @@ class Base64ImageField(ImageField):
 class GetImageMixin:
     """Миксин для метода получения картинки."""
 
-    image = Base64ImageField(required=True, allow_null=True)
-
     def get_image_url(self, obj):
         if obj.image:
             return obj.image.url

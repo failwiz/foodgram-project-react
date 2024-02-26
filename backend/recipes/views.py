@@ -1,12 +1,11 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters
 from rest_framework.viewsets import (
     mixins,
     ModelViewSet,
     GenericViewSet,
 )
 
-from recipes.filters import RecipeFilter
+from recipes.filters import IngredientFilter, RecipeFilter
 from recipes.models import Ingredient, Recipe, Tag
 from recipes.nested import RecipeNestedSerializer
 from recipes.serializers import (
@@ -26,10 +25,10 @@ class IngredientViewSet(
 
     serializer_class = IngredientSerializer
     queryset = Ingredient.objects.all()
-    filter_backends = (filters.SearchFilter,)
+    filter_backends = (DjangoFilterBackend,)
     pagination_class = None
-    lookup_field = 'name'
-    search_fields = ('name',)
+    filterset_class = IngredientFilter
+    filterset_fields = ['name']
 
 
 class RecipeViewSet(ModelViewSet):
