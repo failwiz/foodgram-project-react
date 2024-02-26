@@ -1,9 +1,7 @@
-import base64
-
-from django.core.files.base import ContentFile
 from rest_framework import serializers
 
 from users.serializers import CustomUserSerializer
+from recipes.mixins import GetImageMixin
 from recipes.models import Ingredient, IngredientAmount, Recipe, Tag
 
 
@@ -37,23 +35,19 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
         return obj.ingredient.measurement_unit
 
 
-class Base64ImageField(serializers.ImageField):
-    def to_internal_value(self, data):
-        if isinstance(data, str) and data.startswith('data:image'):
-            format, imgstr = data.split(';base64,')
-            ext = format.split('/')[-1]
+class TagSerializer(serializers.ModelSerializer):
+    """Сериализатор модели тега."""
 
-            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
-
-        return super().to_internal_value(data)
+    class Meta:
+        model = Tag
+        fields = ('id', 'name', 'color', 'slug')
 
 
-class RecipeSerializer(serializers.ModelSerializer):
+class RecipeSerializer(serializers.ModelSerializer, GetImageMixin):
     """Сериализатор для модели рецепта."""
 
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
-    image = Base64ImageField(required=True, allow_null=True)
     ingredients = IngredientAmountSerializer(
         many=True,
         source='ingredient_amounts'
@@ -62,6 +56,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         read_only=True,
         default=serializers.CurrentUserDefault()
     )
+    tags = TagSerializer(many=True)
 
     class Meta:
         model = Recipe
@@ -84,11 +79,6 @@ class RecipeSerializer(serializers.ModelSerializer):
     def get_is_in_shopping_cart(self, obj):
         return obj in self.context.get('request').user.shopping_list.all()
 
-    def get_image_url(self, obj):
-        if obj.image:
-            return obj.image.url
-        return None
-
     def create(self, validated_data):
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredient_amounts')
@@ -104,11 +94,3 @@ class RecipeSerializer(serializers.ModelSerializer):
                 through_defaults={'amount': amount}
             )
         return recipe
-
-
-class TagSerializer(serializers.ModelSerializer):
-    """Сериализатор модели тега."""
-
-    class Meta:
-        model = Tag
-        fields = ('id', 'name', 'color', 'slug')
