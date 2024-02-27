@@ -27,9 +27,9 @@ class ShoppingListRouter(SimpleRouter):
 
     routes = [
         Route(
-            url=r'^{prefix}/download_shopping_car/$',
-            mapping={'get': 'list'},
-            name='cart-download',
+            url=r'^{prefix}/download_shopping_cart/$',
+            mapping={'get': 'download'},
+            name='download_shopping_cart',
             detail=False,
             initkwargs={}
         ),
@@ -57,6 +57,6 @@ router_recipes.register('tags', TagViewset, 'tags')
 
 urlpatterns = [
     path('', include(router_cart.urls)),
-    path('', include(router_recipes.urls)),
     path('', include(router_faves.urls)),
+    path('', include(router_recipes.urls)),
 ]
