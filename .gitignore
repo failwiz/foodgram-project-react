@@ -1,3 +1,7 @@
+#project data
+backend/media/*
+backend/backend_media/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
