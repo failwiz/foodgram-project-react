@@ -11,6 +11,7 @@ from rest_framework.viewsets import (
 from recipes.filters import IngredientFilter, RecipeFilter
 from recipes.models import Ingredient, Recipe, Tag
 from recipes.nested import RecipeNestedSerializer
+from recipes.pagination import PageLimitPagination
 from recipes.permissions import IsOwnerOrReadOnly
 from recipes.serializers import (
     IngredientSerializer,
@@ -40,12 +41,13 @@ class RecipeViewSet(ModelViewSet):
     """Вьюсет для модели рецепта."""
 
     serializer_class = RecipeSerializer
-    queryset = Recipe.objects.all()
+    queryset = Recipe.objects.all().order_by('-id')
     permission_classes = (IsOwnerOrReadOnly,)
+    pagination_class = PageLimitPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     filterset_fields = [
-        'tags', 'author', 'is_favorited', 'is_in_shopping_list'
+        'tags', 'author', 'is_favorited', 'is_in_shopping_list',
     ]
 
     def get_serializer_class(self):

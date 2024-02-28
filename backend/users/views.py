@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework.viewsets import GenericViewSet, mixins
 
+from recipes.pagination import PageLimitPagination
 from users.mixins import GenericSubscriptionMixin
 from users.serializers import SubscriptionSerializer
 
@@ -15,6 +16,7 @@ class UserSubViewset(
 ):
 
     serializer_class = SubscriptionSerializer
+    pagination_class = PageLimitPagination
     sub_to_model = User
     url_var = 'user_id'
     attr_name = 'subscriptions'
@@ -23,4 +25,4 @@ class UserSubViewset(
                           'на которого нет подписки.')
 
     def get_queryset(self):
-        return self.request.user.subscriptions.all()
+        return self.request.user.subscriptions.all().order_by('id')
