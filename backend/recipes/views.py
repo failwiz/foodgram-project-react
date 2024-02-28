@@ -11,6 +11,7 @@ from rest_framework.viewsets import (
 from recipes.filters import IngredientFilter, RecipeFilter
 from recipes.models import Ingredient, Recipe, Tag
 from recipes.nested import RecipeNestedSerializer
+from recipes.permissions import IsOwnerOrReadOnly
 from recipes.serializers import (
     IngredientSerializer,
     RecipeSerializer,
@@ -40,6 +41,7 @@ class RecipeViewSet(ModelViewSet):
 
     serializer_class = RecipeSerializer
     queryset = Recipe.objects.all()
+    permission_classes = (IsOwnerOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     filterset_fields = [
