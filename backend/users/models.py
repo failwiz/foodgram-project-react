@@ -36,7 +36,7 @@ class CustomUser(AbstractUser):
             'ingredient_amounts__ingredient__name',
             'ingredient_amounts__ingredient__measurement_unit'
         ).order_by(
-            'ingredient_amounts__ingredient'
+            'ingredient_amounts__ingredient__name'
         ).annotate(
             sum=models.Sum('ingredient_amounts__amount')
         )

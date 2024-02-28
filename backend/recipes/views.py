@@ -12,7 +12,6 @@ from recipes.filters import IngredientFilter, RecipeFilter
 from recipes.models import Ingredient, Recipe, Tag
 from recipes.nested import RecipeNestedSerializer
 from recipes.serializers import (
-    DownloadShoppingListSerializer,
     IngredientSerializer,
     RecipeSerializer,
     RecipeCreateUpdateSerializer,
@@ -95,24 +94,24 @@ class ShoppingListViewset(
     def get_queryset(self):
         return self.request.user.shopping_list.all()
 
-    def get_serializer_class(self):
-        return (
-            DownloadShoppingListSerializer
-            if self.request.method == 'GET'
-            else super().get_serializer_class()
-        )
-
     def download(self, request, *args, **kwargs):
 
         shopping_list = request.user.generate_shopping_list
 
-        with open('test.txt', 'w') as file:
+        temp = tempfile.NamedTemporaryFile()
+
+        with open(temp.name, 'w') as file:
             for item in shopping_list:
                 file.write('{0}: {1} {2}\n'.format(
                     item['ingredient_amounts__ingredient__name'],
                     item['sum'],
                     item['ingredient_amounts__ingredient__measurement_unit']
                 ))
-        file_handle = open('test.txt', 'rb')
-
-        return FileResponse(file_handle, content_type='text')
+        file_handle = open(temp.name, 'rb')
+        response = FileResponse(
+            file_handle,
+            filename='Shopping-list.txt',
+            as_attachment=True,
+            content_type='text/plain'
+        )
+        return response

@@ -15,8 +15,6 @@ class Recipe(models.Model):
     )
     image = models.ImageField(
         upload_to='recipes/images/',
-        null=True,
-        default=None,
     )
     author = models.ForeignKey(
         User,
@@ -27,7 +25,6 @@ class Recipe(models.Model):
     )
     text = models.TextField(
         verbose_name='Описание',
-        blank=True,
     )
     ingredients = models.ManyToManyField(
         'Ingredient',

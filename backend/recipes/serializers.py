@@ -1,9 +1,9 @@
 from rest_framework.serializers import (
+    CharField,
     CurrentUserDefault,
     IntegerField,
     ModelSerializer,
     PrimaryKeyRelatedField,
-    Serializer,
     SerializerMethodField,
 )
 
@@ -68,11 +68,16 @@ class RecipeCreateUpdateSerializer(
         source='ingredient_amounts',
     )
     author = CustomUserSerializer(
-        read_only=True,
         default=CurrentUserDefault()
     )
-    tags = PrimaryKeyRelatedField(many=True, queryset=Tag.objects.all())
-    image = Base64ImageField(required=True, allow_null=True)
+    tags = PrimaryKeyRelatedField(
+        many=True,
+        queryset=Tag.objects.all(),
+    )
+    image = Base64ImageField()
+    name = CharField()
+    text = CharField()
+    cooking_time = IntegerField()
 
     class Meta:
         model = Recipe
@@ -86,6 +91,7 @@ class RecipeCreateUpdateSerializer(
             'text',
             'cooking_time',
         )
+        read_only_fields = ('id', 'author')
 
     def assign_ingredient_amounts(self, recipe, ingredients):
         for ingredient in ingredients:
@@ -117,6 +123,7 @@ class RecipeCreateUpdateSerializer(
         instance.tags.set(new_tags)
         instance.ingredients.clear()
         self.assign_ingredient_amounts(instance, new_ingredients)
+        instance.save()
         return instance
 
 
@@ -152,15 +159,3 @@ class RecipeSerializer(
             'text',
             'cooking_time',
         )
-
-
-class DownloadShoppingListSerializer(Serializer):
-    """Сериализатор для скачивания списка покупок."""
-
-    field = SerializerMethodField()
-
-    class Meta:
-        fields = ('field',)
-
-    def get_field(self, obj):
-        return 'test?'
