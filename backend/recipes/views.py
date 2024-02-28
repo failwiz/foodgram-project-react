@@ -2,7 +2,6 @@ import tempfile
 
 from django.http import FileResponse
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import (
     mixins,
     ModelViewSet,
@@ -78,6 +77,8 @@ class FavoriteViewset(
     sub_to_model = Recipe
     url_var = 'recipe_id'
     attr_name = 'favorite_recipes'
+    already_subbed_message = 'Этот рецепт уже добавлен в Избранное.'
+    not_subbed_message = 'Этого рецепта нет в Избранном.'
 
     def get_queryset(self):
         return self.request.user.favorite_recipes.all()
@@ -91,7 +92,8 @@ class ShoppingListViewset(
     sub_to_model = Recipe
     url_var = 'recipe_id'
     attr_name = 'shopping_list'
-    permission_classes = (IsAuthenticated,)
+    already_subbed_message = 'Этот рецепт уже в списке покупок.'
+    not_subbed_message = 'Этого рецепта нет в списке покупок.'
 
     def get_queryset(self):
         return self.request.user.shopping_list.all()
