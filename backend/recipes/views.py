@@ -2,6 +2,7 @@ import tempfile
 
 from django.http import FileResponse
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import (
     mixins,
     ModelViewSet,
@@ -90,6 +91,7 @@ class ShoppingListViewset(
     sub_to_model = Recipe
     url_var = 'recipe_id'
     attr_name = 'shopping_list'
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         return self.request.user.shopping_list.all()
