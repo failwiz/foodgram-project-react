@@ -1,15 +1,18 @@
 from django.urls import include, path
 
-from users.views import UserSubViewset
-from users.routers import SubscriptionRouter
+from users.views import UserSubViewset, CustomUserViewset
+from users.routers import UsersRouter, SubscriptionRouter
 
 
 router_subs = SubscriptionRouter()
 router_subs.register('users', UserSubViewset, basename='subscription')
 
 
+router_users = UsersRouter()
+router_users.register('users', CustomUserViewset, 'users')
+
 urlpatterns = [
     path('', include(router_subs.urls)),
-    path('', include('djoser.urls')),
+    path('', include(router_users.urls)),
     path('auth/', include('djoser.urls.authtoken')),
 ]
