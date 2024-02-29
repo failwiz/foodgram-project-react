@@ -16,9 +16,9 @@ class RecipeFilter(rest_framework.FilterSet):
         queryset=Tag.objects.all(),
         to_field_name='slug',
     )
-    author = rest_framework.ModelChoiceFilter(
+    author = rest_framework.CharFilter(
         field_name='author',
-        queryset=User.objects.all(),
+        method='filter_author'
     )
     is_favorited = rest_framework.BooleanFilter(
         field_name='favoriters',
@@ -38,6 +38,11 @@ class RecipeFilter(rest_framework.FilterSet):
             '{}'.format(name): self.request.user
         }
         return qs.filter(**filter_kwargs) if value else qs
+
+    def filter_author(self, qs, name, value: str):
+        if value == 'me':
+            return qs.filter(author__id=self.request.user.id)
+        return qs.filter(author__id=int(value)) if value.isdigit() else qs
 
 
 class IngredientFilter(rest_framework.FilterSet):
