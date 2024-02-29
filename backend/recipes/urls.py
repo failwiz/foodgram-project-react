@@ -1,6 +1,7 @@
 from django.urls import include, path
-from rest_framework.routers import DefaultRouter, Route, SimpleRouter
+from rest_framework.routers import DefaultRouter
 
+from recipes.routers import FavoriteRouter, ShoppingListRouter
 from recipes.views import (
     FavoriteViewset,
     IngredientViewSet,
@@ -10,50 +11,22 @@ from recipes.views import (
 )
 
 
-class FavoriteRouter(SimpleRouter):
-    routes = [
-        Route(
-            url=r'^{prefix}/(?P<recipe_id>\d+)/favorite/$',
-            mapping={'post': 'create', 'delete': 'destroy'},
-            name='favorites',
-            detail=False,
-            initkwargs={}
-        ),
-    ]
-
-
-class ShoppingListRouter(SimpleRouter):
-    """Маршрутизатор для кастомных эндпойнтов для подписок."""
-
-    routes = [
-        Route(
-            url=r'^{prefix}/download_shopping_cart/$',
-            mapping={'get': 'download'},
-            name='download_shopping_cart',
-            detail=False,
-            initkwargs={}
-        ),
-        Route(
-            url=r'^{prefix}/(?P<recipe_id>\d+)/shopping_cart/$',
-            mapping={'post': 'create', 'delete': 'destroy'},
-            name='shopping_cart',
-            detail=False,
-            initkwargs={}
-        ),
-    ]
-
-
 router_faves = ShoppingListRouter()
-router_faves.register('recipes', ShoppingListViewset, basename='cart')
+router_faves.register('recipes', ShoppingListViewset, basename='shopping_cart')
 
 router_cart = FavoriteRouter()
-router_cart.register('recipes', FavoriteViewset, basename='faves')
+router_cart.register('recipes', FavoriteViewset, basename='favorites')
 
 router_recipes = DefaultRouter()
 
-router_recipes.register('recipes', RecipeViewSet, 'recipes')
-router_recipes.register('ingredients', IngredientViewSet, 'ingredients')
-router_recipes.register('tags', TagViewset, 'tags')
+basic_endpoints = (
+    ('recipes', RecipeViewSet),
+    ('ingredients', IngredientViewSet),
+    ('tags', TagViewset),
+)
+
+for name, viewset in basic_endpoints:
+    router_recipes.register(name, viewset, name)
 
 urlpatterns = [
     path('', include(router_cart.urls)),

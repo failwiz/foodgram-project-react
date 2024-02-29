@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from djoser.views import UserViewSet
 from rest_framework.viewsets import GenericViewSet, mixins
 
 from recipes.pagination import PageLimitPagination
@@ -9,11 +10,17 @@ from users.serializers import SubscriptionSerializer
 User = get_user_model()
 
 
+class CustomUserViewset(UserViewSet):
+    """Вьюсет для модели пользователя, наследованный от djoser."""
+    pass
+
+
 class UserSubViewset(
     GenericSubscriptionMixin,
     mixins.ListModelMixin,
     GenericViewSet
 ):
+    """Вьюсет для подписок на пользователей."""
 
     serializer_class = SubscriptionSerializer
     pagination_class = PageLimitPagination
