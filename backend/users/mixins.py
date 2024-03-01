@@ -58,7 +58,11 @@ class IsSubscribedMixin:
     """Миксин для поля подписки в сериализаторе."""
 
     def get_is_subscribed(self, obj):
-        return (
-            False if self.context.get('request').user.is_anonymous
-            else obj in self.context.get('request').user.subscriptions.all()
-        )
+        if (
+            self.context.get('request')
+            and self.context.get('request').user.is_authenticated
+        ):
+            return (
+                obj in self.context.get('request').user.subscriptions.all()
+            )
+        return False

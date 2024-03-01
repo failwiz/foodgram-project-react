@@ -2,6 +2,8 @@ import tempfile
 
 from django.http import FileResponse
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.viewsets import (
     mixins,
     ModelViewSet,
@@ -53,12 +55,25 @@ class RecipeViewSet(ModelViewSet):
     def get_serializer_class(self):
         return (
             RecipeCreateUpdateSerializer
-            if self.request.method in ['POST', 'PATCH']
+            if self.action in ['create', 'update']
             else super().get_serializer_class()
         )
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance = self.perform_create(serializer)
+
+        headers = self.get_success_headers(serializer.data)
+        serializer = RecipeSerializer(instance=instance)
+        return Response(
+            serializer.data,
+            status=status.HTTP_201_CREATED,
+            headers=headers
+        )
+
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        return serializer.save(author=self.request.user)
 
 
 class TagViewset(
