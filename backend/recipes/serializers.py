@@ -34,7 +34,9 @@ class IngredientAmountSerializer(ModelSerializer):
     )
     name = SerializerMethodField()
     measurement_unit = SerializerMethodField()
-    amount = IntegerField()
+    amount = IntegerField(
+        min_value=1,
+    )
 
     class Meta:
         model = IngredientAmount
@@ -77,7 +79,11 @@ class RecipeCreateUpdateSerializer(
     image = Base64ImageField()
     name = CharField()
     text = CharField()
-    cooking_time = IntegerField()
+    is_favorited = SerializerMethodField()
+    is_in_shopping_cart = SerializerMethodField()
+    cooking_time = IntegerField(
+        min_value=1,
+    )
 
     class Meta:
         model = Recipe
@@ -89,6 +95,8 @@ class RecipeCreateUpdateSerializer(
             'name',
             'image',
             'text',
+            'is_favorited',
+            'is_in_shopping_cart',
             'cooking_time',
         )
         read_only_fields = ('id', 'author')

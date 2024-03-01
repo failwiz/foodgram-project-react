@@ -28,17 +28,13 @@ class UsersRouter(SimpleRouter):
         ),
         Route(
             url=r'^{prefix}/',
-            mapping={'get': 'list'},
+            mapping={
+                'get': 'list',
+                'post': 'create'
+            },
             name='{basename}-list',
             detail=False,
             initkwargs={'suffix': 'List'}
-        ),
-        Route(
-            url=r'^{prefix}/',
-            mapping={'post': 'create'},
-            name='{basename}-create',
-            detail=False,
-            initkwargs={'suffix': 'Create'}
         ),
     ]
 

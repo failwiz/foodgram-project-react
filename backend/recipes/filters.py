@@ -37,7 +37,9 @@ class RecipeFilter(rest_framework.FilterSet):
         filter_kwargs = {
             '{}'.format(name): self.request.user
         }
-        return qs.filter(**filter_kwargs) if value else qs
+        return qs.filter(**filter_kwargs) if (
+            value and self.request.user.is_authenticated
+        ) else qs
 
     def filter_author(self, qs, name, value: str):
         if value == 'me':

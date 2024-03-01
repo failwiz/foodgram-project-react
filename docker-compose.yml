@@ -42,7 +42,7 @@ services:
     depends_on:
       - backend
     ports:
-      - 9000:80
+      - 8000:80
     volumes:
       - static:/gateway_static
       - media:/gateway_media

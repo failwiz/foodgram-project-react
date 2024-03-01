@@ -19,6 +19,12 @@ User = get_user_model()
 
 class CustomUserViewset(UserViewSet):
     """Вьюсет для модели пользователя, наследованный от djoser."""
+    pagination_class = PageLimitPagination
+
+    def get_permissions(self):
+        if self.action == 'me':
+            self.permission_classes = settings.PERMISSIONS.current_user
+        return super().get_permissions()
 
     def me(self, request, *args, **kwargs):
         self.get_object = self.get_instance
