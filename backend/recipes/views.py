@@ -47,7 +47,7 @@ class RecipeViewSet(ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     filterset_fields = [
-        'tags', 'author', 'is_favorited', 'is_in_shopping_list',
+        'tags', 'author', 'is_favorited', 'is_in_shopping_cart',
     ]
 
     def get_serializer_class(self):
@@ -73,41 +73,40 @@ class TagViewset(
     pagination_class = None
 
 
-class FavoriteViewset(
-    GenericSubscriptionMixin
-):
-
+class FavesAndCartViewset(GenericSubscriptionMixin):
+    """Вьюсет для избранного и списка покупок."""
     serializer_class = RecipeNestedSerializer
     sub_to_model = Recipe
     url_var = 'recipe_id'
-    attr_name = 'favorite_recipes'
-    already_subbed_message = 'Этот рецепт уже добавлен в Избранное.'
-    not_subbed_message = 'Этого рецепта нет в Избранном.'
 
     def get_queryset(self):
-        return self.request.user.favorite_recipes.all()
+        if self.action in ('favorite', 'unfavorite'):
+            self.attr_name = 'favorite_recipes'
+        elif self.action in (
+            'add_to_cart', 'remove_from_cart', 'download_cart'
+        ):
+            self.attr_name = 'shopping_list'
+        return super().get_queryset()
 
+    def favorite(self, request, *args, **kwargs):
+        self.attr_name = 'favorite_recipes'
+        return super().create(request, *args, **kwargs)
 
-class ShoppingListViewset(
-    GenericSubscriptionMixin,
-):
+    def unfavorite(self, request, *args, **kwargs):
+        self.attr_name = 'favorite_recipes'
+        return super().destroy(request, *args, **kwargs)
 
-    serializer_class = RecipeNestedSerializer
-    sub_to_model = Recipe
-    url_var = 'recipe_id'
-    attr_name = 'shopping_list'
-    already_subbed_message = 'Этот рецепт уже в списке покупок.'
-    not_subbed_message = 'Этого рецепта нет в списке покупок.'
+    def add_to_cart(self, request, *args, **kwargs):
+        self.attr_name = 'shopping_list'
+        return super().create(request, *args, **kwargs)
 
-    def get_queryset(self):
-        return self.request.user.shopping_list.all()
+    def remove_from_cart(self, request, *args, **kwargs):
+        self.attr_name = 'shopping_list'
+        return super().destroy(request, *args, **kwargs)
 
-    def download(self, request, *args, **kwargs):
-
+    def download_cart(self, request, *args, **kwargs):
         shopping_list = request.user.generate_shopping_list
-
         temp = tempfile.NamedTemporaryFile()
-
         with open(temp.name, 'w') as file:
             for item in shopping_list:
                 file.write('{0}: {1} {2}\n'.format(

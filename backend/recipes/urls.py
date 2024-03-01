@@ -1,21 +1,19 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from recipes.routers import FavoriteRouter, ShoppingListRouter
+from recipes.routers import FavesAndCartRouter
 from recipes.views import (
-    FavoriteViewset,
+    FavesAndCartViewset,
     IngredientViewSet,
     RecipeViewSet,
-    ShoppingListViewset,
     TagViewset
 )
 
 
-router_faves = ShoppingListRouter()
-router_faves.register('recipes', ShoppingListViewset, basename='shopping_cart')
-
-router_cart = FavoriteRouter()
-router_cart.register('recipes', FavoriteViewset, basename='favorites')
+router_faves_and_cart = FavesAndCartRouter()
+router_faves_and_cart.register(
+    'recipes', FavesAndCartViewset, 'recipes-additional'
+)
 
 router_recipes = DefaultRouter()
 
@@ -29,7 +27,6 @@ for name, viewset in basic_endpoints:
     router_recipes.register(name, viewset, name)
 
 urlpatterns = [
-    path('', include(router_cart.urls)),
-    path('', include(router_faves.urls)),
+    path('', include(router_faves_and_cart.urls)),
     path('', include(router_recipes.urls)),
 ]

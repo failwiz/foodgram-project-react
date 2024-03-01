@@ -1,6 +1,6 @@
 #project data
-backend/media/*
-backend/backend_media/*
+backend/media
+backend/backend_media
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

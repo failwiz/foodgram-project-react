@@ -13,7 +13,6 @@ class GenericSubscriptionMixin(
     serializer_class = None
     sub_to_model = None
     url_var = None
-    attr_name = None
     already_subbed_message = None
     not_subbed_message = None
 
