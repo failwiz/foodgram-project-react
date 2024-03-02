@@ -4,7 +4,6 @@ volumes:
   pg_data:
   static:
   media:
-  docs:
 
 services:
   db:
@@ -46,4 +45,3 @@ services:
     volumes:
       - static:/gateway_static
       - media:/gateway_media
-      - docs:/docs
