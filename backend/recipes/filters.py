@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.db.models import Q
+from django.db.models import BooleanField, ExpressionWrapper, Q
 from django_filters import rest_framework
 
 from recipes.models import Ingredient, Recipe, Tag
@@ -69,4 +69,8 @@ class IngredientFilter(rest_framework.FilterSet):
 
         return qs.filter(
             Q(**filter_kwargs_start) | Q(**filter_kwargs_contains)
-        ) if value else qs
+        ).annotate(
+            start=ExpressionWrapper(
+                Q(**filter_kwargs_start), output_field=BooleanField()
+            )
+        ).order_by('-start') if value else qs
