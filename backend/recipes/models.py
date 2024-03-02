@@ -46,9 +46,16 @@ class Recipe(models.Model):
     cooking_time = models.IntegerField(
         verbose_name='Время приготовления',
     )
+    pub_date = models.DateTimeField(
+        'Дата публикации', auto_now_add=True
+    )
 
     def __str__(self) -> str:
         return self.name
+
+    @property
+    def favoriters_count(self):
+        return self.favoriters.count()
 
     class Meta:
         verbose_name = 'Рецепт'

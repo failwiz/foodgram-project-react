@@ -43,7 +43,7 @@ class RecipeViewSet(ModelViewSet):
     """Вьюсет для модели рецепта."""
 
     serializer_class = RecipeSerializer
-    queryset = Recipe.objects.all().order_by('-id')
+    queryset = Recipe.objects.all().order_by('-pub_date')
     permission_classes = (IsOwnerOrReadOnly,)
     pagination_class = PageLimitPagination
     http_method_names = ['get', 'post', 'patch', 'delete']
