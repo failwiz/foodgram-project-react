@@ -1,3 +1,4 @@
+from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import (
     CharField,
     CurrentUserDefault,
@@ -68,6 +69,8 @@ class RecipeCreateUpdateSerializer(
     ingredients = IngredientAmountSerializer(
         many=True,
         source='ingredient_amounts',
+        allow_empty=False,
+        required=True,
     )
     author = CustomUserSerializer(
         default=CurrentUserDefault()
@@ -75,9 +78,13 @@ class RecipeCreateUpdateSerializer(
     tags = PrimaryKeyRelatedField(
         many=True,
         queryset=Tag.objects.all(),
+        allow_empty=False,
+        required=True,
     )
     image = Base64ImageField()
-    name = CharField()
+    name = CharField(
+        max_length=200,
+    )
     text = CharField()
     is_favorited = SerializerMethodField()
     is_in_shopping_cart = SerializerMethodField()
@@ -133,6 +140,24 @@ class RecipeCreateUpdateSerializer(
         self.assign_ingredient_amounts(instance, new_ingredients)
         instance.save()
         return instance
+
+    def validate_tags(self, values):
+        values_set = set()
+        for value in values:
+            if value in values_set:
+                raise ValidationError('duplicates!')
+            else:
+                values_set.add(value)
+        return values
+
+    def validate_ingredients(self, values):
+        values_set = set()
+        for value in values:
+            if value['ingredient'] in values_set:
+                raise ValidationError('duplicates!')
+            else:
+                values_set.add(value['ingredient'])
+        return values
 
 
 class RecipeSerializer(

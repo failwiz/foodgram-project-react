@@ -6,7 +6,7 @@ from recipes.mixins import GetImageMixin
 from recipes.models import Recipe
 
 
-class CustomListSerializer(ListSerializer):
+class NestedRecipeListSerializer(ListSerializer):
     """Кастомный сериализатор для списков."""
 
     def get_recipes_limit(self):
@@ -35,4 +35,4 @@ class RecipeNestedSerializer(ModelSerializer, GetImageMixin):
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
-        list_serializer_class = CustomListSerializer
+        list_serializer_class = NestedRecipeListSerializer

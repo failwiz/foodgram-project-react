@@ -74,7 +74,7 @@ class RecipeViewSet(ModelViewSet):
         return serializer.save(author=self.request.user)
 
     def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
+        partial = False
         instance = self.get_object()
         serializer = self.get_serializer(
             instance,
