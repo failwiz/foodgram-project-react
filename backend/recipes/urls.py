@@ -1,14 +1,8 @@
 from django.urls import include, path
-from rest_framework.routers import DefaultRouter
-
 from recipes.routers import FavesAndCartRouter
-from recipes.views import (
-    FavesAndCartViewset,
-    IngredientViewSet,
-    RecipeViewSet,
-    TagViewset
-)
-
+from recipes.views import (FavesAndCartViewset, IngredientViewSet,
+                           RecipeViewSet, TagViewset)
+from rest_framework.routers import DefaultRouter
 
 router_faves_and_cart = FavesAndCartRouter()
 router_faves_and_cart.register(

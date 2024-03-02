@@ -1,17 +1,12 @@
 from django.contrib.auth import get_user_model
 from djoser.conf import settings
-from djoser.serializers import (
-    UserCreateSerializer,
-    UserSerializer,
-)
+from djoser.serializers import UserCreateSerializer, UserSerializer
+from recipes.nested import RecipeNestedSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-
-from recipes.nested import RecipeNestedSerializer
 from users.constants import LENGTH_CHAR_FIELD, LENGTH_EMAIL, USERNAME_PATTERN
 from users.mixins import IsSubscribedMixin
 from users.validators import PatternValidator
-
 
 User = get_user_model()
 

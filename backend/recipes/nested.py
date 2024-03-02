@@ -1,9 +1,8 @@
 from django.conf import settings
 from django.db.models import Manager
-from rest_framework.serializers import ListSerializer, ModelSerializer
-
 from recipes.mixins import GetImageMixin
 from recipes.models import Recipe
+from rest_framework.serializers import ListSerializer, ModelSerializer
 
 
 class NestedRecipeListSerializer(ListSerializer):

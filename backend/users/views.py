@@ -1,18 +1,13 @@
 from django.contrib.auth import get_user_model
 from djoser import utils
 from djoser.conf import settings
-from djoser.views import (
-    UserViewSet,
-    update_session_auth_hash,
-)
-from rest_framework import status
-from rest_framework.viewsets import GenericViewSet, mixins
-from rest_framework.response import Response
-
+from djoser.views import UserViewSet, update_session_auth_hash
 from recipes.pagination import PageLimitPagination
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet, mixins
 from users.mixins import GenericSubscriptionMixin
 from users.serializers import SubscriptionSerializer
-
 
 User = get_user_model()
 

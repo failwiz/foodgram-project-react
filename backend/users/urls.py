@@ -1,8 +1,6 @@
 from django.urls import include, path
-
-from users.views import UserSubViewset, CustomUserViewset
-from users.routers import UsersRouter, SubscriptionRouter
-
+from users.routers import SubscriptionRouter, UsersRouter
+from users.views import CustomUserViewset, UserSubViewset
 
 router_subs = SubscriptionRouter()
 router_subs.register('users', UserSubViewset, basename='subscription')

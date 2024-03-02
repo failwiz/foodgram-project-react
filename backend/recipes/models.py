@@ -1,12 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
-
-
-from recipes.constants import (
-    INGREDIENT_NAME_LENGTH,
-    RECIPE_NAME_LENGTH,
-    TAG_NAME_LENGTH,
-)
+from recipes.constants import (INGREDIENT_NAME_LENGTH, RECIPE_NAME_LENGTH,
+                               TAG_NAME_LENGTH)
 
 User = get_user_model()
 
