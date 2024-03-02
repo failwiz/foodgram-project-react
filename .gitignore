@@ -2,6 +2,9 @@
 backend/media
 backend/backend_media
 
+#todo
+.todo
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

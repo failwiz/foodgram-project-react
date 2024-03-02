@@ -46,6 +46,7 @@ class RecipeViewSet(ModelViewSet):
     queryset = Recipe.objects.all().order_by('-id')
     permission_classes = (IsOwnerOrReadOnly,)
     pagination_class = PageLimitPagination
+    http_method_names = ['get', 'post', 'patch', 'delete']
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     filterset_fields = [
@@ -53,17 +54,14 @@ class RecipeViewSet(ModelViewSet):
     ]
 
     def get_serializer_class(self):
-        return (
-            RecipeCreateUpdateSerializer
-            if self.action in ['create', 'update']
-            else super().get_serializer_class()
-        )
+        if self.action in ['create', 'partial_update']:
+            self.serializer_class = RecipeCreateUpdateSerializer
+        return super().get_serializer_class()
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         instance = self.perform_create(serializer)
-
         headers = self.get_success_headers(serializer.data)
         serializer = RecipeSerializer(instance=instance)
         return Response(
@@ -74,6 +72,22 @@ class RecipeViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         return serializer.save(author=self.request.user)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(
+            instance,
+            data=request.data,
+            partial=partial
+        )
+        serializer.is_valid(raise_exception=True)
+        instance = self.perform_update(serializer)
+        serializer = RecipeSerializer(instance=instance)
+        return Response(serializer.data)
+
+    def perform_update(self, serializer):
+        return serializer.save()
 
 
 class TagViewset(
