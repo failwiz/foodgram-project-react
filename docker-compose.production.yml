@@ -1,0 +1,43 @@
+version: '3.3'
+
+volumes:
+  pg_data_prod:
+  static_prod:
+  media_prod:
+
+services:
+  db:
+    image: postgres:13
+    env_file: .env
+    volumes:
+      - pg_data_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -d $$POSTGRES_DB -U $$POSTGRES_USER
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  backend:
+    image: failwiz/foodgram_backend
+    env_file: .env
+    volumes:
+      - static_prod:/backend_static
+      - media_prod:/app/backend_media
+    depends_on:
+      db:
+        condition: service_healthy
+  frontend:
+    image: failwiz/foodgram_frontend
+    env_file: .env
+    command: cp -r /app/build/. /frontend_static/
+    volumes:
+      - static_prod:/frontend_static
+  gateway:
+    image: failwiz/foodgram_gateway
+    env_file: .env
+    depends_on:
+      - backend
+    volumes:
+      - static_prod:/gateway_files
+      - media_prod:/gateway_media
+    ports:
+      - 8000:80

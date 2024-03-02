@@ -2,8 +2,8 @@ from django.contrib.auth import get_user_model
 from djoser import utils
 from djoser.conf import settings
 from djoser.views import (
-    update_session_auth_hash,
     UserViewSet,
+    update_session_auth_hash,
 )
 from rest_framework import status
 from rest_framework.viewsets import GenericViewSet, mixins
