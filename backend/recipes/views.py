@@ -119,18 +119,22 @@ class FavesAndCartViewset(GenericSubscriptionMixin):
 
     def favorite(self, request, *args, **kwargs):
         self.attr_name = 'favorite_recipes'
+        self.already_subbed_message = 'Уже в избранном.'
         return super().create(request, *args, **kwargs)
 
     def unfavorite(self, request, *args, **kwargs):
         self.attr_name = 'favorite_recipes'
+        self.not_subbed_message = 'Такого рецепта нет в избранном.'
         return super().destroy(request, *args, **kwargs)
 
     def add_to_cart(self, request, *args, **kwargs):
         self.attr_name = 'shopping_list'
+        self.already_subbed_message = 'Уже в списке покупок.'
         return super().create(request, *args, **kwargs)
 
     def remove_from_cart(self, request, *args, **kwargs):
         self.attr_name = 'shopping_list'
+        self.not_subbed_message = 'Такого рецепта нет в списке покупок.'
         return super().destroy(request, *args, **kwargs)
 
     def download_cart(self, request, *args, **kwargs):

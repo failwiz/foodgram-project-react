@@ -9,6 +9,7 @@ class GenericSubscriptionMixin(
     mixins.DestroyModelMixin,
     GenericViewSet
 ):
+    """Миксин для общей модели подписки пользователя на что-то."""
 
     serializer_class = None
     sub_to_model = None

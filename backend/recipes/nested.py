@@ -10,6 +10,7 @@ class NestedRecipeListSerializer(ListSerializer):
     """Кастомный сериализатор для списков."""
 
     def get_recipes_limit(self):
+        """Метод для получения значения query-параметра recipes_limit."""
         limit_recipes = settings.REST_FRAMEWORK['PAGE_SIZE']
         if 'recipes_limit' in self.context.get('request').query_params:
             limit: str = self.context.get(

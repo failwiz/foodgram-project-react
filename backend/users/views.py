@@ -62,3 +62,13 @@ class UserSubViewset(
 
     def get_queryset(self):
         return self.request.user.subscriptions.all().order_by('id')
+
+    def create(self, request, *args, **kwargs):
+        return (
+            Response(
+                'Невозможно подписаться на себя.',
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            if self.get_object() == self.request.user
+            else super().create(request, *args, **kwargs)
+        )

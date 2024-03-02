@@ -2,6 +2,8 @@ from rest_framework.routers import Route, SimpleRouter
 
 
 class FavesAndCartRouter(SimpleRouter):
+    """Маршрутизатор для эндпойнтов избранного и списка покупок."""
+
     routes = [
         Route(
             url=r'^{prefix}/download_shopping_cart/$',

@@ -9,6 +9,7 @@ from rest_framework.serializers import (
 )
 
 from users.serializers import CustomUserSerializer
+from recipes.constants import MIN_AMOUNT, MIN_TIME, RECIPE_NAME_LENGTH
 from recipes.mixins import (
     Base64ImageField,
     GetImageMixin,
@@ -36,7 +37,7 @@ class IngredientAmountSerializer(ModelSerializer):
     name = SerializerMethodField()
     measurement_unit = SerializerMethodField()
     amount = IntegerField(
-        min_value=1,
+        min_value=MIN_AMOUNT,
     )
 
     class Meta:
@@ -83,13 +84,13 @@ class RecipeCreateUpdateSerializer(
     )
     image = Base64ImageField()
     name = CharField(
-        max_length=200,
+        max_length=RECIPE_NAME_LENGTH,
     )
     text = CharField()
     is_favorited = SerializerMethodField()
     is_in_shopping_cart = SerializerMethodField()
     cooking_time = IntegerField(
-        min_value=1,
+        min_value=MIN_TIME,
     )
 
     class Meta:
@@ -109,6 +110,12 @@ class RecipeCreateUpdateSerializer(
         read_only_fields = ('id', 'author')
 
     def assign_ingredient_amounts(self, recipe, ingredients):
+        """
+        Метод для добавления ингредиентов в рецепт.
+        Обрабатывается случай, когда добавлено два количества одного и того же
+        ингредиента (они при этом суммируются), но сейчас он не срабатывает
+        из-за валидации в `.validate_ingredients()`.
+        """
         for ingredient in ingredients:
             if ingredient['ingredient'] not in recipe.ingredients.all():
                 IngredientAmount.objects.update_or_create(
@@ -145,7 +152,7 @@ class RecipeCreateUpdateSerializer(
         values_set = set()
         for value in values:
             if value in values_set:
-                raise ValidationError('duplicates!')
+                raise ValidationError('Дублирующиеся теги.')
             else:
                 values_set.add(value)
         return values
@@ -154,7 +161,7 @@ class RecipeCreateUpdateSerializer(
         values_set = set()
         for value in values:
             if value['ingredient'] in values_set:
-                raise ValidationError('duplicates!')
+                raise ValidationError('Дублирующиеся ингредиенты.')
             else:
                 values_set.add(value['ingredient'])
         return values
