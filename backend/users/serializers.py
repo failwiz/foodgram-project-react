@@ -5,9 +5,12 @@ from djoser.serializers import (
     UserSerializer,
 )
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 
 from recipes.nested import RecipeNestedSerializer
+from users.constants import LENGTH_CHAR_FIELD, LENGTH_EMAIL, USERNAME_PATTERN
 from users.mixins import IsSubscribedMixin
+from users.validators import PatternValidator
 
 
 User = get_user_model()
@@ -16,9 +19,36 @@ User = get_user_model()
 class CustomUserCreateSerializer(UserCreateSerializer):
     """Сериализатор для создания пользователя."""
 
-    email = serializers.EmailField()
-    first_name = serializers.CharField()
-    last_name = serializers.CharField()
+    email = serializers.EmailField(
+        max_length=LENGTH_EMAIL,
+        validators=[
+            UniqueValidator(
+                queryset=User.objects.all(),
+                message='Этот адрес уже занят!',
+            ),
+        ],
+    )
+    first_name = serializers.CharField(
+        max_length=LENGTH_CHAR_FIELD,
+    )
+    last_name = serializers.CharField(
+        max_length=LENGTH_CHAR_FIELD,
+    )
+    username = serializers.CharField(
+        max_length=LENGTH_CHAR_FIELD,
+        validators=[
+            PatternValidator(pattern=USERNAME_PATTERN),
+            UniqueValidator(
+                queryset=User.objects.all(),
+                message='Это имя пользователя уже занято!',
+            ),
+        ]
+    )
+    password = serializers.CharField(
+        max_length=LENGTH_CHAR_FIELD,
+        style={"input_type": "password"},
+        write_only=True
+    )
 
     class Meta:
         model = User
@@ -60,6 +90,16 @@ class SubscriptionSerializer(serializers.ModelSerializer, IsSubscribedMixin):
     class Meta:
         model = User
         fields = (
+            'id',
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'recipes',
+            'recipes_count',
+        )
+        read_only_fields = (
             'id',
             'username',
             'email',

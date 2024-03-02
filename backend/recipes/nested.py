@@ -6,10 +6,11 @@ from recipes.mixins import GetImageMixin
 from recipes.models import Recipe
 
 
-class CustomListSerializer(ListSerializer):
+class NestedRecipeListSerializer(ListSerializer):
     """Кастомный сериализатор для списков."""
 
     def get_recipes_limit(self):
+        """Метод для получения значения query-параметра recipes_limit."""
         limit_recipes = settings.REST_FRAMEWORK['PAGE_SIZE']
         if 'recipes_limit' in self.context.get('request').query_params:
             limit: str = self.context.get(
@@ -35,4 +36,4 @@ class RecipeNestedSerializer(ModelSerializer, GetImageMixin):
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
-        list_serializer_class = CustomListSerializer
+        list_serializer_class = NestedRecipeListSerializer

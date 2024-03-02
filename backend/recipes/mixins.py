@@ -5,6 +5,7 @@ from rest_framework.serializers import ImageField
 
 
 class Base64ImageField(ImageField):
+    """Поле сериализатора для сохранения картинки из строки Base64."""
     def to_internal_value(self, data):
         if isinstance(data, str) and data.startswith('data:image'):
             format, imgstr = data.split(';base64,')
@@ -28,17 +29,25 @@ class IsFavoritedMixin:
     """Миксин для метода определения избранного."""
 
     def get_is_favorited(self, obj):
-        return (
-            False if self.context.get('request').user.is_anonymous
-            else obj in self.context.get('request').user.favorite_recipes.all()
-        )
+        if (
+            self.context.get('request')
+            and self.context.get('request').user.is_authenticated
+        ):
+            return (
+                obj in self.context.get('request').user.favorite_recipes.all()
+            )
+        return False
 
 
 class isInShoppingCartMixin:
     """Миксин для метода определения назождения в списке покупок."""
 
     def get_is_in_shopping_cart(self, obj):
-        return (
-            False if self.context.get('request').user.is_anonymous
-            else obj in self.context.get('request').user.shopping_list.all()
-        )
+        if (
+            self.context.get('request')
+            and self.context.get('request').user.is_authenticated
+        ):
+            return (
+                obj in self.context.get('request').user.shopping_list.all()
+            )
+        return False

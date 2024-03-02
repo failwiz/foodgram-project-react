@@ -2,6 +2,12 @@ from django.contrib.auth import get_user_model
 from django.db import models
 
 
+from recipes.constants import (
+    INGREDIENT_NAME_LENGTH,
+    RECIPE_NAME_LENGTH,
+    TAG_NAME_LENGTH,
+)
+
 User = get_user_model()
 
 
@@ -10,7 +16,7 @@ class Recipe(models.Model):
 
     name = models.CharField(
         verbose_name='Название',
-        max_length=50,
+        max_length=RECIPE_NAME_LENGTH,
         null=False,
     )
     image = models.ImageField(
@@ -40,9 +46,16 @@ class Recipe(models.Model):
     cooking_time = models.IntegerField(
         verbose_name='Время приготовления',
     )
+    pub_date = models.DateTimeField(
+        'Дата публикации', auto_now_add=True
+    )
 
     def __str__(self) -> str:
         return self.name
+
+    @property
+    def favoriters_count(self):
+        return self.favoriters.count()
 
     class Meta:
         verbose_name = 'Рецепт'
@@ -54,7 +67,7 @@ class Tag(models.Model):
 
     name = models.CharField(
         verbose_name='Название',
-        max_length=20,
+        max_length=TAG_NAME_LENGTH,
     )
     color = models.CharField(
         verbose_name='Цветовой код',
@@ -79,7 +92,7 @@ class Ingredient(models.Model):
 
     name = models.CharField(
         verbose_name='Название',
-        max_length=50,
+        max_length=INGREDIENT_NAME_LENGTH,
         null=False,
     )
     measurement_unit = models.CharField(

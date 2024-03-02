@@ -1,3 +1,4 @@
+from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import (
     CharField,
     CurrentUserDefault,
@@ -8,6 +9,7 @@ from rest_framework.serializers import (
 )
 
 from users.serializers import CustomUserSerializer
+from recipes.constants import MIN_AMOUNT, MIN_TIME, RECIPE_NAME_LENGTH
 from recipes.mixins import (
     Base64ImageField,
     GetImageMixin,
@@ -34,7 +36,9 @@ class IngredientAmountSerializer(ModelSerializer):
     )
     name = SerializerMethodField()
     measurement_unit = SerializerMethodField()
-    amount = IntegerField()
+    amount = IntegerField(
+        min_value=MIN_AMOUNT,
+    )
 
     class Meta:
         model = IngredientAmount
@@ -66,6 +70,8 @@ class RecipeCreateUpdateSerializer(
     ingredients = IngredientAmountSerializer(
         many=True,
         source='ingredient_amounts',
+        allow_empty=False,
+        required=True,
     )
     author = CustomUserSerializer(
         default=CurrentUserDefault()
@@ -73,11 +79,19 @@ class RecipeCreateUpdateSerializer(
     tags = PrimaryKeyRelatedField(
         many=True,
         queryset=Tag.objects.all(),
+        allow_empty=False,
+        required=True,
     )
     image = Base64ImageField()
-    name = CharField()
+    name = CharField(
+        max_length=RECIPE_NAME_LENGTH,
+    )
     text = CharField()
-    cooking_time = IntegerField()
+    is_favorited = SerializerMethodField()
+    is_in_shopping_cart = SerializerMethodField()
+    cooking_time = IntegerField(
+        min_value=MIN_TIME,
+    )
 
     class Meta:
         model = Recipe
@@ -89,11 +103,19 @@ class RecipeCreateUpdateSerializer(
             'name',
             'image',
             'text',
+            'is_favorited',
+            'is_in_shopping_cart',
             'cooking_time',
         )
         read_only_fields = ('id', 'author')
 
     def assign_ingredient_amounts(self, recipe, ingredients):
+        """
+        Метод для добавления ингредиентов в рецепт.
+        Обрабатывается случай, когда добавлено два количества одного и того же
+        ингредиента (они при этом суммируются), но сейчас он не срабатывает
+        из-за валидации в `.validate_ingredients()`.
+        """
         for ingredient in ingredients:
             if ingredient['ingredient'] not in recipe.ingredients.all():
                 IngredientAmount.objects.update_or_create(
@@ -125,6 +147,24 @@ class RecipeCreateUpdateSerializer(
         self.assign_ingredient_amounts(instance, new_ingredients)
         instance.save()
         return instance
+
+    def validate_tags(self, values):
+        values_set = set()
+        for value in values:
+            if value in values_set:
+                raise ValidationError('Дублирующиеся теги.')
+            else:
+                values_set.add(value)
+        return values
+
+    def validate_ingredients(self, values):
+        values_set = set()
+        for value in values:
+            if value['ingredient'] in values_set:
+                raise ValidationError('Дублирующиеся ингредиенты.')
+            else:
+                values_set.add(value['ingredient'])
+        return values
 
 
 class RecipeSerializer(

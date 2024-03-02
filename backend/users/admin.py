@@ -11,3 +11,5 @@ class UserAdmin(admin.ModelAdmin):
     model = User
 
     filter_horizontal = ('favorite_recipes', 'shopping_list', 'subscriptions')
+    search_fields = ('username', 'email')
+    list_filter = ('username', 'email')

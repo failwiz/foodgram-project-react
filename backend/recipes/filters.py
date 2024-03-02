@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.db.models import Q
+from django.db.models import BooleanField, ExpressionWrapper, Q
 from django_filters import rest_framework
 
 from recipes.models import Ingredient, Recipe, Tag
@@ -37,7 +37,9 @@ class RecipeFilter(rest_framework.FilterSet):
         filter_kwargs = {
             '{}'.format(name): self.request.user
         }
-        return qs.filter(**filter_kwargs) if value else qs
+        return qs.filter(**filter_kwargs) if (
+            value and self.request.user.is_authenticated
+        ) else qs
 
     def filter_author(self, qs, name, value: str):
         if value == 'me':
@@ -67,4 +69,8 @@ class IngredientFilter(rest_framework.FilterSet):
 
         return qs.filter(
             Q(**filter_kwargs_start) | Q(**filter_kwargs_contains)
-        ) if value else qs
+        ).annotate(
+            start=ExpressionWrapper(
+                Q(**filter_kwargs_start), output_field=BooleanField()
+            )
+        ).order_by('-start') if value else qs

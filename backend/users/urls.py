@@ -7,7 +7,6 @@ from users.routers import UsersRouter, SubscriptionRouter
 router_subs = SubscriptionRouter()
 router_subs.register('users', UserSubViewset, basename='subscription')
 
-
 router_users = UsersRouter()
 router_users.register('users', CustomUserViewset, 'users')
 
