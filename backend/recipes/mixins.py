@@ -21,7 +21,7 @@ class GetImageMixin:
 
     def get_image_url(self, obj):
         if obj.image:
-            return obj.image.url
+            return str(obj.image.url)
         return None
 
 
