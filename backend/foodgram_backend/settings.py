@@ -5,12 +5,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-jj)8u5*dorop8wo$uve2h6q4nfw31(+a2x4k1oyzn&kos4-bd0'
 
-CSRF_TRUSTED_ORIGINS = ['https://yc-alsttur.ddns.net', 'gateway']
+CSRF_TRUSTED_ORIGINS = [os.getenv('FOODGRAM_DOMAIN', 'localhost'), 'gateway']
 
 
 DEBUG = os.getenv('DEBUG', False)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [os.getenv('FOODGRAM_DOMAIN', 'localhost')]
 
 
 INSTALLED_APPS = [
