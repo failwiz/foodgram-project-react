@@ -58,5 +58,8 @@
 # Для ревьюера
 Учетные данные администратора:
 
+**Доменное имя**: `https://yc-alsttur.ddns.net/`
+
 **username**: `admin`
+
 **password**: `%ztQ%Q9P`
