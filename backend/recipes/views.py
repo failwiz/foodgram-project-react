@@ -66,12 +66,11 @@ class RecipeViewSet(ModelViewSet):
         return serializer.save(author=self.request.user)
 
     def update(self, request, *args, **kwargs):
-        partial = False
         instance = self.get_object()
         serializer = self.get_serializer(
             instance,
             data=request.data,
-            partial=partial
+            partial=False
         )
         serializer.is_valid(raise_exception=True)
         instance = self.perform_update(serializer)

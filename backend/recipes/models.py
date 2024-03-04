@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
-from recipes.constants import (INGREDIENT_NAME_LENGTH, RECIPE_NAME_LENGTH,
+from recipes.constants import (COLOR_CODE_MAX_LENGTH, INGREDIENT_NAME_LENGTH,
+                               MEASUREMENT_MAX_LENGTH, RECIPE_NAME_LENGTH,
                                TAG_NAME_LENGTH)
 
 User = get_user_model()
@@ -67,7 +68,7 @@ class Tag(models.Model):
     color = models.CharField(
         verbose_name='Цветовой код',
         default='FFFFFF',
-        max_length=6,
+        max_length=COLOR_CODE_MAX_LENGTH,
     )
     slug = models.SlugField(
         verbose_name='Идентификатор',
@@ -92,7 +93,7 @@ class Ingredient(models.Model):
     )
     measurement_unit = models.CharField(
         verbose_name='Единица измерения',
-        max_length=10,
+        max_length=MEASUREMENT_MAX_LENGTH,
         null=False
     )
 

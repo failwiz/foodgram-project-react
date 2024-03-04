@@ -66,4 +66,10 @@ class IsSubscribedMixin:
             return (
                 obj in self.context.get('request').user.subscriptions.all()
             )
-        return False
+        return (
+            obj in self.context.get('request').user.subscriptions.all()
+            if (
+                self.context.get('request')
+                and self.context.get('request').user.is_authenticated
+            ) else False
+        )
