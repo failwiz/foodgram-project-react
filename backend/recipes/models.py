@@ -23,7 +23,6 @@ class Recipe(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Автор',
         related_name='recipes',
-        null=False,
     )
     text = models.TextField(
         verbose_name='Описание',
@@ -32,7 +31,8 @@ class Recipe(models.Model):
         'Ingredient',
         through='IngredientAmount',
         related_name='recipes',
-        verbose_name='Ингредиенты'
+        verbose_name='Ингредиенты',
+        blank=False,
     )
     tags = models.ManyToManyField(
         'Tag',
