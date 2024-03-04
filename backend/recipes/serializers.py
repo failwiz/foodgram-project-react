@@ -1,4 +1,5 @@
-from recipes.constants import MIN_AMOUNT, MIN_TIME, RECIPE_NAME_LENGTH
+from recipes.constants import (MAX_AMOUNT, MAX_TIME, MIN_AMOUNT, MIN_TIME,
+                               RECIPE_NAME_LENGTH)
 from recipes.mixins import (Base64ImageField, GetImageMixin, IsFavoritedMixin,
                             isInShoppingCartMixin)
 from recipes.models import Ingredient, IngredientAmount, Recipe, Tag
@@ -29,6 +30,7 @@ class IngredientAmountSerializer(ModelSerializer):
     measurement_unit = SerializerMethodField()
     amount = IntegerField(
         min_value=MIN_AMOUNT,
+        max_value=MAX_AMOUNT,
     )
 
     class Meta:
@@ -82,6 +84,7 @@ class RecipeCreateUpdateSerializer(
     is_in_shopping_cart = SerializerMethodField()
     cooking_time = IntegerField(
         min_value=MIN_TIME,
+        max_value=MAX_TIME,
     )
 
     class Meta:

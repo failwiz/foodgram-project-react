@@ -1,9 +1,13 @@
 from django.contrib import admin
+from recipes.forms import IngredientAmountFormSet
 from recipes.models import Ingredient, IngredientAmount, Recipe, Tag
 
 
 class IngredientAmountInline(admin.TabularInline):
+    formset = IngredientAmountFormSet
     model = Recipe.ingredients.through
+    min_num = 1
+    extra = 1
 
 
 @admin.register(Recipe)

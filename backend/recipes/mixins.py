@@ -20,34 +20,30 @@ class GetImageMixin:
     """Миксин для метода получения картинки."""
 
     def get_image_url(self, obj):
-        if obj.image:
-            return str(obj.image.url)
-        return None
+        return obj.image.url if obj.image else None
 
 
 class IsFavoritedMixin:
     """Миксин для метода определения избранного."""
 
     def get_is_favorited(self, obj):
-        if (
-            self.context.get('request')
-            and self.context.get('request').user.is_authenticated
-        ):
-            return (
-                obj in self.context.get('request').user.favorite_recipes.all()
-            )
-        return False
+        return (
+            obj in self.context.get('request').user.favorite_recipes.all()
+            if (
+                self.context.get('request')
+                and self.context.get('request').user.is_authenticated
+            ) else False
+        )
 
 
 class isInShoppingCartMixin:
     """Миксин для метода определения назождения в списке покупок."""
 
     def get_is_in_shopping_cart(self, obj):
-        if (
-            self.context.get('request')
-            and self.context.get('request').user.is_authenticated
-        ):
-            return (
-                obj in self.context.get('request').user.shopping_list.all()
-            )
-        return False
+        return (
+            obj in self.context.get('request').user.shopping_list.all()
+            if (
+                self.context.get('request')
+                and self.context.get('request').user.is_authenticated
+            ) else False
+        )

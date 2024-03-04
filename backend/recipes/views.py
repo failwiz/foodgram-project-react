@@ -66,12 +66,11 @@ class RecipeViewSet(ModelViewSet):
         return serializer.save(author=self.request.user)
 
     def update(self, request, *args, **kwargs):
-        partial = False
         instance = self.get_object()
         serializer = self.get_serializer(
             instance,
             data=request.data,
-            partial=partial
+            partial=False
         )
         serializer.is_valid(raise_exception=True)
         instance = self.perform_update(serializer)
@@ -134,10 +133,11 @@ class FavesAndCartViewset(GenericSubscriptionMixin):
         temp = tempfile.NamedTemporaryFile()
         with open(temp.name, 'w') as file:
             for item in shopping_list:
-                file.write('{0}: {1} {2}\n'.format(
+                file.write('{0}: {1} {2} (для рецептов: {3})\n'.format(
                     item['ingredient_amounts__ingredient__name'],
                     item['sum'],
-                    item['ingredient_amounts__ingredient__measurement_unit']
+                    item['ingredient_amounts__ingredient__measurement_unit'],
+                    item['for_recipes'],
                 ))
         file_handle = open(temp.name, 'rb')
         response = FileResponse(
