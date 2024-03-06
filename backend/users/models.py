@@ -1,5 +1,4 @@
 from django.contrib.auth.models import AbstractUser
-from django.contrib.postgres.aggregates import StringAgg
 from django.db import models
 
 
@@ -29,16 +28,3 @@ class CustomUser(AbstractUser):
     @property
     def recipes_count(self):
         return self.recipes.count()
-
-    @property
-    def generate_shopping_list(self):
-        shopping_list = self.shopping_list.all()
-        return shopping_list.values(
-            'ingredient_amounts__ingredient__name',
-            'ingredient_amounts__ingredient__measurement_unit'
-        ).order_by(
-            'ingredient_amounts__ingredient__name'
-        ).annotate(
-            sum=models.Sum('ingredient_amounts__amount'),
-            for_recipes=StringAgg('name', delimiter=', ')
-        )
