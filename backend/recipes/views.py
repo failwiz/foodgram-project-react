@@ -1,5 +1,6 @@
 import tempfile
 
+from django.db.models import Sum
 from django.http import FileResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from recipes.filters import IngredientFilter, RecipeFilter
@@ -129,15 +130,27 @@ class FavesAndCartViewset(GenericSubscriptionMixin):
         return super().destroy(request, *args, **kwargs)
 
     def download_cart(self, request, *args, **kwargs):
-        shopping_list = request.user.generate_shopping_list
+        shopping_list = self.request.user.shopping_list.all()
+        sums = shopping_list.values(
+            'ingredient_amounts__ingredient__name',
+            'ingredient_amounts__ingredient__measurement_unit'
+        ).order_by(
+            'ingredient_amounts__ingredient__name'
+        ).annotate(
+            sum=Sum('ingredient_amounts__amount'),
+        )
         temp = tempfile.NamedTemporaryFile()
         with open(temp.name, 'w') as file:
-            for item in shopping_list:
-                file.write('{0}: {1} {2} (для рецептов: {3})\n'.format(
+            for recipe in shopping_list.order_by('name'):
+                file.write(f'{recipe.name}:\n')
+                for ingredient in recipe.ingredients.all().order_by('name'):
+                    file.write(f' - {ingredient.name}\n')
+            file.write('\nИтого необходимо купить:\n')
+            for item in sums:
+                file.write('{0}: {1} {2}\n'.format(
                     item['ingredient_amounts__ingredient__name'],
                     item['sum'],
                     item['ingredient_amounts__ingredient__measurement_unit'],
-                    item['for_recipes'],
                 ))
         file_handle = open(temp.name, 'rb')
         response = FileResponse(
