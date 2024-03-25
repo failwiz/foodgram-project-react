@@ -245,6 +245,16 @@ function App() {
               updateOrders={updateOrders}
             />
           </Route>
+          <Route
+            exact
+            path='/user/:id'
+          >
+            <SingleCard
+              loggedIn={loggedIn}
+              loadItem={loadSingleItem}
+              updateOrders={updateOrders}
+            />
+          </Route>
 
           <Route exact path='/recipes'>
             <Main
